@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import fakeData from '../../fakeData';
+// import fakeData from '../../fakeData';
 import { addToDatabaseCart, getDatabaseCart } from '../../utilities/databaseManager';
 import Cart from '../Cart/Cart';
 import { Link } from 'react-router-dom';
@@ -8,20 +8,41 @@ import './Shop.css'
 
 const Shop = () => {
 
-    const first10 = fakeData.slice(0,10)
-    const [products, setProducts] = useState(first10);
+    // const first10 = fakeData.slice(0,10)
+    const [products, setProducts] = useState([]);
     const [cart,setCart] = useState([])
+    const [search,setSearch] = useState('')
     document.title="Shop More"
    
     useEffect(() =>{
+        fetch('http://localhost:5000/products?search='+search)
+        .then(res => res.json())
+        .then(data => setProducts(data))
+    },[search])
+
+    useEffect(() =>{
         const savedCart =getDatabaseCart();
         const productKeys = Object.keys(savedCart);
-        const previousCart =productKeys.map(existingKey => {
-            const product =fakeData.find(pd => pd.key === existingKey)
-            product.quantity = savedCart[existingKey]
-            return product;
+
+        fetch('http://localhost:5000/productsByKeys',{
+            method:'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(productKeys)
         })
-        setCart(previousCart)
+        .then(res => res.json())
+        .then(data => setCart(data))
+
+        // console.log(products ,productKeys)
+        // if(products.length > 0){
+        //     const previousCart =productKeys.map(existingKey => {
+        //         const product = products.find(pd => pd.key === existingKey)
+        //         product.quantity = savedCart[existingKey]
+        //         return product;
+        //     })
+        //     setCart(previousCart)
+        // }
     }, [])    
     const handleAddProduct = (product) => {
         const toBeaddedKey =product.key
@@ -42,11 +63,15 @@ const Shop = () => {
         addToDatabaseCart(product.key,count)
     }
 
+    const handleSearch = event => {
+        setSearch(event.target.value);
+    }
+
     return (
         <div className="twin-container">
             <div className="product-container">
             
-                
+            <input type="text" placeholder="Search" onBlur={handleSearch} className="product-search"/>    
                 {
                     products.map(pd =>  <Product 
                         key ={pd.key}

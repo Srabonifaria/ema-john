@@ -1,19 +1,50 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { UserContext } from '../../App';
+import { getDatabaseCart, processOrder } from '../../utilities/databaseManager';
+import ProcessPayment from '../ProcessPayment/ProcessPayment';
 import './Shipment.css'
 
 const Shipment = () => {
     const { register, handleSubmit, watch, errors } = useForm();
     const [loggedInUser,setLoggedInUser] = useContext(UserContext)
+    const [shippingData,setShippingData] = useState(null)
     const onSubmit = data => {
-        console.log('from submitted',data)
+     setShippingData(data)
+
     };
+
+    const handlePaymentSuccess = paymentId => {
+      const saveCart = getDatabaseCart();
+      const orderDetails = {
+        ...loggedInUser,
+         products: saveCart,
+          shipment: shippingData, 
+          paymentId,
+          orderTime: new Date()};
+      // console.log(orderDetails)
+      fetch('http://localhost:5000/addOrder', {
+        method: 'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify(orderDetails)
+      })
+    .then(res => res.json())
+    .then(data => {
+      if(data){
+        processOrder();
+        alert('Your Order have been successfully');
+      }
+    })
+    }
   
-    console.log(watch("example"));
+      // console.log(watch("example"));
   
     return (
-      <form className="ship-from" onSubmit={handleSubmit(onSubmit)}>
+      <div className="row">
+        <div style={{display: shippingData ? 'none' :'block'}} className="col-md-6">
+        <form className="ship-from" onSubmit={handleSubmit(onSubmit)}>
         <input name="name" defaultValue={loggedInUser.name} ref={register({ required: true })}  placeholder="Your name"/>
         {errors.name && <span className="error">Name is required</span>}
         
@@ -27,6 +58,12 @@ const Shipment = () => {
         {errors.phone && <span className="error">Phone is required</span>}
         <input type="submit" />
       </form>
+        </div>
+        <div  style={{display: shippingData ? 'block' :'none'}} className="col-md-6">
+          <h2>Pay here</h2>
+          <ProcessPayment handlePayment ={handlePaymentSuccess}></ProcessPayment>
+       </div>
+      </div>
     );
 };
 

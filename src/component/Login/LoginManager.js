@@ -75,6 +75,7 @@ export const createUserWithEmailAndPassword = (name, email, password) => {
     newUserInfo.error = '';
     newUserInfo.success = true;
     updateUserName(name);
+    // setUserToken();
     return newUserInfo;
   })
   .catch( error => {
