@@ -10,7 +10,7 @@ const ProductDetails = () => {
     document.title="Product Details"
     // const product = fakeData.find(pd => pd.key === productKey)
     useEffect(() =>{
-        fetch('http://localhost:5000/product/' +productKey)
+        fetch('https://protected-shore-23390.herokuapp.com/product/' +productKey)
         .then(res => res.json())
         .then(data =>{
             setProduct(data)

@@ -6,7 +6,7 @@ import ProcessPayment from '../ProcessPayment/ProcessPayment';
 import './Shipment.css'
 
 const Shipment = () => {
-    const { register, handleSubmit, watch, errors } = useForm();
+    const { register, handleSubmit,  errors } = useForm();
     const [loggedInUser,setLoggedInUser] = useContext(UserContext)
     const [shippingData,setShippingData] = useState(null)
     const onSubmit = data => {
@@ -23,7 +23,7 @@ const Shipment = () => {
           paymentId,
           orderTime: new Date()};
       // console.log(orderDetails)
-      fetch('http://localhost:5000/addOrder', {
+      fetch('https://protected-shore-23390.herokuapp.com/addOrder', {
         method: 'POST',
         headers:{
           'Content-Type':'application/json'

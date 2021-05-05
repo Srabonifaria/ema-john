@@ -15,7 +15,7 @@ const Shop = () => {
     document.title="Shop More"
    
     useEffect(() =>{
-        fetch('http://localhost:5000/products?search='+search)
+        fetch('https://protected-shore-23390.herokuapp.com/products?search='+search)
         .then(res => res.json())
         .then(data => setProducts(data))
     },[search])
@@ -24,7 +24,7 @@ const Shop = () => {
         const savedCart =getDatabaseCart();
         const productKeys = Object.keys(savedCart);
 
-        fetch('http://localhost:5000/productsByKeys',{
+        fetch('https://protected-shore-23390.herokuapp.com/productsByKeys',{
             method:'POST',
             headers: {
                 'Content-Type': 'application/json'
